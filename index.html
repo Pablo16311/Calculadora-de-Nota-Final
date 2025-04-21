@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Nota Final</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f1f3f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .contenedor {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background: #2980b9;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #3498db;
+    }
+    #resultado {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    .alerta {
+      background: #fffbe6;
+      color: #856404;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ffeeba;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Calculadora de Nota Final</h1>
+  <div class="contenedor">
+    <p class="alerta">
+      ⚠️ Usa <strong>punto (.)</strong> para los decimales. Ej: <code>3.5</code>, no <code>3,5</code>
+    </p>
+
+    <label for="cognitivo">Notas Cognitivas (separadas por comas):</label>
+    <input type="text" id="cognitivo" placeholder="Ej: 3.5,4,2.8,5,4.2">
+
+    <label for="digital">Notas Digitales (separadas por comas):</label>
+    <input type="text" id="digital" placeholder="Ej: 5,4.5,4">
+
+    <label for="axiologico">Nota Axiológica:</label>
+    <input type="text" id="axiologico" placeholder="Ej: 4.5">
+
+    <label for="meta">Nota que deseas al final:</label>
+    <input type="text" id="meta" placeholder="Ej: 3.5">
+
+    <button onclick="calcular()">Calcular Nota Necesaria en el Examen</button>
+
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    function promedioNotas(texto) {
+      const numeros = texto.split(",").map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+      if (numeros.length === 0) return 0;
+      const suma = numeros.reduce((a, b) => a + b, 0);
+      return suma / numeros.length;
+    }
+
+    function calcular() {
+      const notaCog = promedioNotas(document.getElementById("cognitivo").value);
+      const notaDig = promedioNotas(document.getElementById("digital").value);
+      const notaAxio = parseFloat(document.getElementById("axiologico").value);
+      const meta = parseFloat(document.getElementById("meta").value);
+
+      if (isNaN(notaCog) || isNaN(notaDig) || isNaN(notaAxio) || isNaN(meta)) {
+        document.getElementById("resultado").textContent = "❌ Por favor ingresa todos los datos correctamente.";
+        return;
+      }
+
+      const pesoCog = 0.35;
+      const pesoDig = 0.20;
+      const pesoAxio = 0.15;
+      const pesoFinal = 0.30;
+
+      const notaParcial = (notaCog * pesoCog) + (notaDig * pesoDig) + (notaAxio * pesoAxio);
+      const necesariaFinal = (meta - notaParcial) / pesoFinal;
+      const resultado = necesariaFinal.toFixed(2);
+
+      if (necesariaFinal > 5) {
+        document.getElementById("resultado").textContent = `😬 Necesitas más de 5.0 (${resultado}) para alcanzar tu meta.`;
+      } else if (necesariaFinal < 0) {
+        document.getElementById("resultado").textContent = `✅ ¡Ya alcanzaste tu meta! No necesitas nada en el examen final. 🎉`;
+      } else {
+        document.getElementById("resultado").textContent = `📚 Necesitas sacar al menos un ${resultado} en la Evaluación Final.`;
+      }
+    }
+  </script>
+</body>
+</html>
